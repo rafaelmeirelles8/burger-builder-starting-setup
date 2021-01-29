@@ -19,10 +19,24 @@ class BurgerBuilder extends Component {
             cheese:0,
             meat:0
         },
-        price: 4
+        price: 4,
+        disable: true
     }
 
-    addIngredientsHandler = (type, addOrRemove) =>
+    updatePurchaseState (updatedIngredients) {
+        const ingredients = updatedIngredients;
+        
+        const sum = Object.keys(ingredients)
+        .map(igKey => {
+            return ingredients[igKey];
+        }).reduce((sum, el) =>{
+            return sum + el;
+        } ,0)
+        
+        this.setState({disable: sum <= 0});
+    }
+
+    addIngredientsHandler = (type) =>
     {
         const oldCount = this.state.ingredients[type];
         const updatedCount = oldCount + 1;
@@ -32,20 +46,16 @@ class BurgerBuilder extends Component {
 
         const oldPrice = this.state.price;
         const totalPrice = oldPrice + INGREDIENT_PRICES[type];
+                      
 
-        this.setState({ingredients: updatedIngredients, price:totalPrice});        
+        this.setState({ingredients: updatedIngredients, price:totalPrice});  
+        
+        this.updatePurchaseState(updatedIngredients);
     }
 
     removeIngredientsHandler = (type) =>
     {
         const oldCount = this.state.ingredients[type];
-
-        if(oldCount===0)
-        {
-            alert('You can not remove: '+ type + ' because it is not added!');
-            return;
-        }
-
         const updatedCount = oldCount - 1;
 
         const updatedIngredients = {
@@ -57,16 +67,29 @@ class BurgerBuilder extends Component {
         const totalPrice = oldPrice - INGREDIENT_PRICES[type];
 
         this.setState({ingredients: updatedIngredients, price:totalPrice});
+
+        this.updatePurchaseState(updatedIngredients);
     }
 
     render()
     {
+        const disabledInfo = {
+            ...this.state.ingredients
+        };
+        
+        for(let key in disabledInfo)
+        {
+            disabledInfo[key] = disabledInfo[key] <= 0
+        }
         return(
             <Auxiliary>
                 <Burger ingredients={this.state.ingredients}></Burger>
                 <BuildConstrols 
+                price={this.state.price}
                 ingredientAdded={this.addIngredientsHandler}
-                ingredientRemoved={this.removeIngredientsHandler}></BuildConstrols>
+                ingredientRemoved={this.removeIngredientsHandler}
+                disabledInfo={disabledInfo}
+                disable={this.state.disable}></BuildConstrols>
             </Auxiliary>
         )
 }
