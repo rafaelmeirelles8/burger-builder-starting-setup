@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import Auxiliary from '../../hoc/Auxiliary';
 import Burger from '../../components/Burger/Burger';
 import BuildConstrols from '../../components/Burger/BuildControls/BuildControls';
+import Modal from '../../UI/Modal/Modal';
+import OrderSummary from '../../components/Burger/OrderSummary/OrderSummary';
+import orderSummary from '../../components/Burger/OrderSummary/OrderSummary';
 
 const INGREDIENT_PRICES = {
     salad: 0.5,
@@ -23,7 +26,7 @@ class BurgerBuilder extends Component {
         disable: true
     }
 
-    updatePurchaseState (updatedIngredients) {
+    updatePurchaseState = (updatedIngredients) => {
         const ingredients = updatedIngredients;
         
         const sum = Object.keys(ingredients)
@@ -83,6 +86,9 @@ class BurgerBuilder extends Component {
         }
         return(
             <Auxiliary>
+                <Modal>
+                    <orderSummary/>
+                </Modal>
                 <Burger ingredients={this.state.ingredients}></Burger>
                 <BuildConstrols 
                 price={this.state.price}
